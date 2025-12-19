@@ -3,158 +3,215 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Миний Шилдэг Тоглоом</title>
+    <title>X O Тоглоом - Best of Best</title>
     <style>
-        /* CSS: Дизайн хэсэг */
+        /* CSS: Дизайн ба Хөдөлгөөн */
         :root {
-            --primary: #6c5ce7;
-            --success: #60b033;
-            --error: #eb4d4b;
-            --bg: #222;
+            --bg-color: #1a1a2e;
+            --cell-color: #16213e;
+            --text-color: #e94560;
+            --x-color: #00d2ff;
+            --o-color: #ff0076;
+            --win-color: #4cd137;
         }
 
         body {
-            margin: 0;
-            padding: 0;
+            background-color: var(--bg-color);
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: var(--bg);
-            color: white;
-            font-family: 'Arial', sans-serif;
-            transition: all 0.5s ease;
+            margin: 0;
+            overflow: hidden;
         }
 
         .game-container {
             text-align: center;
-            background: #333;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-            max-width: 400px;
-            width: 90%;
+            animation: fadeIn 1s ease-in;
         }
 
-        h1 { font-size: 2.5rem; margin-bottom: 10px; }
-        .description { color: #ccc; margin-bottom: 20px; }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            letter-spacing: 5px;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+        }
 
-        input {
-            width: 80px;
-            padding: 15px;
-            font-size: 2rem;
-            border: 3px solid var(--primary);
-            background: none;
-            color: white;
-            text-align: center;
-            border-radius: 10px;
+        .status {
+            font-size: 1.5rem;
             margin-bottom: 20px;
+            height: 35px;
+            color: #ccc;
         }
 
-        .buttons { display: flex; gap: 10px; justify-content: center; }
+        /* Тоглоомын талбар */
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 15px;
+            margin: 0 auto 30px;
+        }
 
-        button {
-            padding: 12px 25px;
-            font-size: 1rem;
+        .cell {
+            width: 100px;
+            height: 100px;
+            background-color: var(--cell-color);
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
             font-weight: bold;
             cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .cell:hover {
+            background-color: #1f4068;
+            transform: scale(1.05);
+        }
+
+        /* X болон O-ийн онцгой өнгө */
+        .cell.x { color: var(--x-color); text-shadow: 0 0 15px var(--x-color); }
+        .cell.o { color: var(--o-color); text-shadow: 0 0 15px var(--o-color); }
+
+        /* Хожсон нүднүүд анивчих эффект */
+        .cell.winner {
+            background-color: var(--win-color);
+            color: white;
+            animation: pulse 1s infinite;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            background: var(--text-color);
+            color: white;
             border: none;
-            border-radius: 5px;
-            transition: 0.2s;
+            border-radius: 50px;
+            transition: 0.3s;
+            box-shadow: 0 5px 20px rgba(233, 69, 96, 0.4);
         }
 
-        #checkBtn { background: var(--primary); color: white; }
-        #againBtn { background: #555; color: white; }
-        button:hover { opacity: 0.8; transform: translateY(-2px); }
-
-        .status-box {
-            margin-top: 30px;
-            padding: 15px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 10px;
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(233, 69, 96, 0.6);
         }
 
-        #message { font-size: 1.2rem; font-weight: bold; color: #ffeaa7; }
-        .stats { margin-top: 10px; font-size: 0.9rem; }
-        
-        /* Зөв таасан үеийн класс */
-        .win-bg { background-color: var(--success) !important; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
     </style>
 </head>
 <body>
 
     <div class="game-container">
-        <h1>🔢 Таагаарай!</h1>
-        <p class="description">1 - 20 хооронд нэг тоог сонголоо.</p>
-
-        <input type="number" id="guess" min="1" max="20">
+        <h1>X <span style="color: #e94560;">O</span></h1>
+        <div class="status" id="statusText">X-ийн ээлж</div>
         
-        <div class="buttons">
-            <button id="checkBtn">ШАЛГАХ</button>
-            <button id="againBtn">ДАХИН ЭХЛЭХ</button>
+        <div class="board" id="board">
+            <div class="cell" data-index="0"></div>
+            <div class="cell" data-index="1"></div>
+            <div class="cell" data-index="2"></div>
+            <div class="cell" data-index="3"></div>
+            <div class="cell" data-index="4"></div>
+            <div class="cell" data-index="5"></div>
+            <div class="cell" data-index="6"></div>
+            <div class="cell" data-index="7"></div>
+            <div class="cell" data-index="8"></div>
         </div>
 
-        <div class="status-box">
-            <p id="message">Тоглоом эхэллээ...</p>
-            <div class="stats">
-                <p>Оноо: <span id="score">20</span></p>
-                <p>Дээд амжилт: <span id="highscore">0</span></p>
-            </div>
-        </div>
+        <button onclick="resetGame()">Дахин эхлэх</button>
     </div>
 
     <script>
-        // JS: Логик хэсэг
-        let secretNumber = Math.floor(Math.random() * 20) + 1;
-        let score = 20;
-        let highscore = 0;
+        // JS: Логик ба Удирдлага
+        const cells = document.querySelectorAll('.cell');
+        const statusText = document.getElementById('statusText');
+        let currentPlayer = "X";
+        let gameState = ["", "", "", "", "", "", "", "", ""];
+        let gameActive = true;
 
-        const msgLabel = document.getElementById('message');
-        const scoreLabel = document.getElementById('score');
-        const highscoreLabel = document.getElementById('highscore');
-        const guessInput = document.getElementById('guess');
+        const winningConditions = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8], // Хэвтээ
+            [0, 3, 6], [1, 4, 7], [2, 5, 8], // Боосоо
+            [0, 4, 8], [2, 4, 6]             // Ташуу
+        ];
 
-        // Шалгах функц
-        document.getElementById('checkBtn').onclick = function() {
-            const guess = Number(guessInput.value);
+        // Нүд бүрт дарах үйлдэл нэмэх
+        cells.forEach(cell => {
+            cell.addEventListener('click', () => {
+                const index = cell.getAttribute('data-index');
 
-            // 1. Оруулаагүй бол
-            if (!guess) {
-                msgLabel.textContent = "⛔ Тоо оруулна уу!";
-            } 
-            // 2. Зөв таасан бол
-            else if (guess === secretNumber) {
-                msgLabel.textContent = "🎉 Зөв таалаа! Чи чадлаа!";
-                document.body.classList.add('win-bg');
-                if (score > highscore) {
-                    highscore = score;
-                    highscoreLabel.textContent = highscore;
-                }
-            } 
-            // 3. Буруу таасан бол
-            else {
-                if (score > 1) {
-                    msgLabel.textContent = guess > secretNumber ? "📈 Хэтэрхий их байна!" : "📉 Хэтэрхий бага байна!";
-                    score--;
-                    scoreLabel.textContent = score;
-                } else {
-                    msgLabel.textContent = "💥 Тоглоом дууслаа!";
-                    scoreLabel.textContent = 0;
-                    document.body.style.backgroundColor = '#eb4d4b';
+                if (gameState[index] !== "" || !gameActive) return;
+
+                gameState[index] = currentPlayer;
+                cell.textContent = currentPlayer;
+                cell.classList.add(currentPlayer.toLowerCase());
+
+                checkWinner();
+            });
+        });
+
+        
+
+        function checkWinner() {
+            let roundWon = false;
+            let winCombo = [];
+
+            for (let condition of winningConditions) {
+                const [a, b, c] = condition;
+                if (gameState[a] && gameState[a] === gameState[b] && gameState[a] === gameState[c]) {
+                    roundWon = true;
+                    winCombo = condition;
+                    break;
                 }
             }
-        };
 
-        // Дахин эхлүүлэх функц
-        document.getElementById('againBtn').onclick = function() {
-            score = 20;
-            secretNumber = Math.floor(Math.random() * 20) + 1;
-            msgLabel.textContent = "Тоглоом эхэллээ...";
-            scoreLabel.textContent = score;
-            guessInput.value = '';
-            document.body.classList.remove('win-bg');
-            document.body.style.backgroundColor = '#222';
-        };
+            if (roundWon) {
+                statusText.textContent = `Ялагч: ${currentPlayer}! 🎉`;
+                statusText.style.color = "#4cd137";
+                gameActive = false;
+                // Хожсон нүднүүдийг тодруулах
+                winCombo.forEach(index => cells[index].classList.add('winner'));
+                return;
+            }
+
+            if (!gameState.includes("")) {
+                statusText.textContent = "Тэнцлээ! 🤝";
+                gameActive = false;
+                return;
+            }
+
+            // Ээлж солих
+            currentPlayer = currentPlayer === "X" ? "O" : "X";
+            statusText.textContent = `${currentPlayer}-ийн ээлж`;
+        }
+
+        function resetGame() {
+            currentPlayer = "X";
+            gameState = ["", "", "", "", "", "", "", "", ""];
+            gameActive = true;
+            statusText.textContent = "X-ийн ээлж";
+            statusText.style.color = "#ccc";
+            cells.forEach(cell => {
+                cell.textContent = "";
+                cell.className = "cell"; // Классуудыг цэвэрлэх
+            });
+        }
     </script>
 </body>
 </html>
