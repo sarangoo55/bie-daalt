@@ -27,7 +27,6 @@
 
         .game-container { text-align: center; }
 
-        /* Онооны самбар */
         .scoreboard {
             display: flex;
             justify-content: space-around;
@@ -110,7 +109,7 @@
                 <span id="xScoreVal" class="score-val">0</span>
             </div>
             <div class="score-box">
-                Зорилго
+                Үе
                 <span class="score-val">3</span>
             </div>
             <div class="score-box o-score">
@@ -211,17 +210,15 @@
                 oScoreDisplay.textContent = oScore;
             }
 
-            // Нийлбэр дүнгээр 3 оноо авсан эсэхийг шалгах
             if (xScore === 3 || oScore === 3) {
-                statusText.innerHTML = `<span style="color:var(--win-color)">🏆 ${currentPlayer} ЦУВРАЛД ЯЛЛАА! 🏆</span>`;
+                statusText.innerHTML = `<span style="color:var(--win-color)"> ${currentPlayer} ХОЖЛОО! </span>`;
                 gameActive = false;
-                // Товчлуурыг нуух эсвэл өөрчлөх
                 document.querySelector('.reset-round').style.display = 'none';
             }
         }
 
         function resetRound() {
-            if (xScore === 3 || oScore === 3) return; // Тоглоом дууссан бол ажиллахгүй
+            if (xScore === 3 || oScore === 3) return; 
             gameState = ["", "", "", "", "", "", "", "", ""];
             gameActive = true;
             currentPlayer = "X";
