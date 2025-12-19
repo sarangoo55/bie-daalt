@@ -1,1 +1,160 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Миний Шилдэг Тоглоом</title>
+    <style>
+        /* CSS: Дизайн хэсэг */
+        :root {
+            --primary: #6c5ce7;
+            --success: #60b033;
+            --error: #eb4d4b;
+            --bg: #222;
+        }
 
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: var(--bg);
+            color: white;
+            font-family: 'Arial', sans-serif;
+            transition: all 0.5s ease;
+        }
+
+        .game-container {
+            text-align: center;
+            background: #333;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        .description { color: #ccc; margin-bottom: 20px; }
+
+        input {
+            width: 80px;
+            padding: 15px;
+            font-size: 2rem;
+            border: 3px solid var(--primary);
+            background: none;
+            color: white;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .buttons { display: flex; gap: 10px; justify-content: center; }
+
+        button {
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            transition: 0.2s;
+        }
+
+        #checkBtn { background: var(--primary); color: white; }
+        #againBtn { background: #555; color: white; }
+        button:hover { opacity: 0.8; transform: translateY(-2px); }
+
+        .status-box {
+            margin-top: 30px;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+        }
+
+        #message { font-size: 1.2rem; font-weight: bold; color: #ffeaa7; }
+        .stats { margin-top: 10px; font-size: 0.9rem; }
+        
+        /* Зөв таасан үеийн класс */
+        .win-bg { background-color: var(--success) !important; }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <h1>🔢 Таагаарай!</h1>
+        <p class="description">1 - 20 хооронд нэг тоог сонголоо.</p>
+
+        <input type="number" id="guess" min="1" max="20">
+        
+        <div class="buttons">
+            <button id="checkBtn">ШАЛГАХ</button>
+            <button id="againBtn">ДАХИН ЭХЛЭХ</button>
+        </div>
+
+        <div class="status-box">
+            <p id="message">Тоглоом эхэллээ...</p>
+            <div class="stats">
+                <p>Оноо: <span id="score">20</span></p>
+                <p>Дээд амжилт: <span id="highscore">0</span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // JS: Логик хэсэг
+        let secretNumber = Math.floor(Math.random() * 20) + 1;
+        let score = 20;
+        let highscore = 0;
+
+        const msgLabel = document.getElementById('message');
+        const scoreLabel = document.getElementById('score');
+        const highscoreLabel = document.getElementById('highscore');
+        const guessInput = document.getElementById('guess');
+
+        // Шалгах функц
+        document.getElementById('checkBtn').onclick = function() {
+            const guess = Number(guessInput.value);
+
+            // 1. Оруулаагүй бол
+            if (!guess) {
+                msgLabel.textContent = "⛔ Тоо оруулна уу!";
+            } 
+            // 2. Зөв таасан бол
+            else if (guess === secretNumber) {
+                msgLabel.textContent = "🎉 Зөв таалаа! Чи чадлаа!";
+                document.body.classList.add('win-bg');
+                if (score > highscore) {
+                    highscore = score;
+                    highscoreLabel.textContent = highscore;
+                }
+            } 
+            // 3. Буруу таасан бол
+            else {
+                if (score > 1) {
+                    msgLabel.textContent = guess > secretNumber ? "📈 Хэтэрхий их байна!" : "📉 Хэтэрхий бага байна!";
+                    score--;
+                    scoreLabel.textContent = score;
+                } else {
+                    msgLabel.textContent = "💥 Тоглоом дууслаа!";
+                    scoreLabel.textContent = 0;
+                    document.body.style.backgroundColor = '#eb4d4b';
+                }
+            }
+        };
+
+        // Дахин эхлүүлэх функц
+        document.getElementById('againBtn').onclick = function() {
+            score = 20;
+            secretNumber = Math.floor(Math.random() * 20) + 1;
+            msgLabel.textContent = "Тоглоом эхэллээ...";
+            scoreLabel.textContent = score;
+            guessInput.value = '';
+            document.body.classList.remove('win-bg');
+            document.body.style.backgroundColor = '#222';
+        };
+    </script>
+</body>
+</html>
